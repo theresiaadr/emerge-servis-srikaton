@@ -21,7 +21,7 @@
       {% if user.is_sales %}
         <a href="{% url 'dashboard' %}">Beranda</a>
         <a href="{% url 'kunjungan_list' %}">Kunjungan</a>
-        <a href="{% url 'blast_wa' %}">Blast WA</a>
+        <a href="{% url 'blast_wa' %}" class="nav-bell">🔔{% if reminder_count %}<span class="bell-count">{{ reminder_count }}</span>{% endif %}</a>
       {% else %}
         <a href="{% url 'dashboard' %}">Dashboard</a>
       {% endif %}

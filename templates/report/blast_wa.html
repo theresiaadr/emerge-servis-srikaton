@@ -16,9 +16,9 @@
       </div>
     </div>
     <div class="wa-links">
-      {% if it.links.H0.link %}<a href="{% url 'klik_wa' it.kunjungan.pk 'H0' %}" class="btn btn-wa btn-sm">WA H0 (Perkenalan)</a>{% endif %}
-      {% if it.links.H2.link %}<a href="{% url 'klik_wa' it.kunjungan.pk 'H2' %}" class="btn btn-wa btn-sm">WA H2 (Follow-up)</a>{% endif %}
-      {% if it.links.H5.link %}<a href="{% url 'klik_wa' it.kunjungan.pk 'H5' %}" class="btn btn-wa btn-sm">WA H5 (Pengingat)</a>{% endif %}
+      {% if it.links.H0.link %}<form method="post" action="{% url 'klik_wa' it.kunjungan.pk 'H0' %}" style="display:inline">{% csrf_token %}<button class="btn btn-wa btn-sm">WA H0 (Perkenalan)</button></form>{% endif %}
+      {% if it.links.H2.link %}<form method="post" action="{% url 'klik_wa' it.kunjungan.pk 'H2' %}" style="display:inline">{% csrf_token %}<button class="btn btn-wa btn-sm">WA H2 (Follow-up)</button></form>{% endif %}
+      {% if it.links.H5.link %}<form method="post" action="{% url 'klik_wa' it.kunjungan.pk 'H5' %}" style="display:inline">{% csrf_token %}<button class="btn btn-wa btn-sm">WA H5 (Pengingat)</button></form>{% endif %}
     </div>
   </div>
   {% endfor %}

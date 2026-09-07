@@ -52,7 +52,10 @@
         <div class="li-sub">{{ k.tanggal|date:"d M Y" }} · {{ k.sales.first_name|default:k.sales.username }} · PIC: {{ k.pic|default:"-" }}</div>
         {% if k.catatan %}<div class="li-sub">📝 {{ k.catatan|truncatechars:80 }}</div>{% endif %}
       </div>
-      <span class="badge badge-{{ k.status }}">{{ k.get_status_display }}</span>
+      <div style="text-align:right">
+        <span class="badge badge-{{ k.status }}">{{ k.get_status_display }}</span><br>
+        <a href="{% url 'kunjungan_detail' k.pk %}" class="btn btn-outline btn-sm" style="margin-top:6px">Detail</a>
+      </div>
     </div>
     {% endfor %}
   </div>

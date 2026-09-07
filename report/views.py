@@ -206,7 +206,9 @@ def blast_wa(request):
 
 @login_required
 def klik_wa(request, pk, tahap):
-    """Catat klik link WA -> auto update status follow-up, lalu redirect ke WA."""
+    """Catat klik link WA (POST/CSRF) -> auto update status, redirect ke WA."""
+    if request.method != "POST":
+        return redirect("blast_wa")
     k = get_object_or_404(Kunjungan, pk=pk)
     if k.sales != request.user:
         return HttpResponseForbidden("Bukan kunjungan Anda.")
@@ -218,6 +220,22 @@ def klik_wa(request, pk, tahap):
     if target:
         return redirect(target)
     return redirect("blast_wa")
+
+
+
+
+# --- DETAIL KUNJUNGAN (drill-down SPV & pemilik) — AI-3 ----------------------
+@login_required
+def kunjungan_detail(request, pk):
+    k = get_object_or_404(
+        Kunjungan.objects.select_related("sales", "instansi"), pk=pk)
+    boleh = (k.sales == request.user or request.user.is_admin_spv
+             or request.user.is_superuser)
+    if not boleh:
+        return HttpResponseForbidden("Tidak boleh mengakses kunjungan ini.")
+    fu = getattr(k, "followup", None)
+    return render(request, "report/kunjungan_detail.html",
+                  {"k": k, "fu": fu})
 
 
 # --- EXPORT EXCEL (SPV) ------------------------------------------------------
@@ -261,3 +279,17 @@ def export_excel(request):
     resp["Content-Disposition"] = f'attachment; filename="laporan_kunjungan_{tgl}.xlsx"'
     wb.save(resp)
     return resp
+
+
+# --- AI-7: data notifikasi (dipakai context_processor) ----------------------
+def hitung_reminder(user):
+    """Jumlah follow-up yang 'waktunya' hari ini (H+2/H+5) untuk sales ini."""
+    if not (user.is_authenticated and getattr(user, "is_sales", False)):
+        return 0
+    hari_ini = timezone.localdate()
+    n = 0
+    for k in Kunjungan.objects.filter(sales=user).only("tanggal"):
+        selisih = (hari_ini - k.tanggal).days
+        if selisih in (2, 5):
+            n += 1
+    return n

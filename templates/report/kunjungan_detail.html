@@ -1,0 +1,33 @@
+{% extends "report/base.html" %}
+{% block title %}Detail Kunjungan — Report Sales{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1 class="page-title">Detail Kunjungan</h1>
+  <a href="javascript:history.back()" class="btn btn-outline btn-sm">← Kembali</a>
+</div>
+
+<div class="card">
+  <div class="card-title">{{ k.instansi.nama }}</div>
+  <table class="rekap">
+    <tr><th>Tanggal</th><td>{{ k.tanggal|date:"d M Y" }}</td></tr>
+    <tr><th>Sales</th><td>{{ k.sales.first_name|default:k.sales.username }}</td></tr>
+    <tr><th>PIC</th><td>{{ k.pic|default:k.instansi.pic|default:"-" }}</td></tr>
+    <tr><th>No. WA</th><td>{{ k.no_wa|default:k.instansi.no_wa|default:"-" }}</td></tr>
+    <tr><th>Alamat</th><td>{{ k.alamat|default:k.instansi.alamat|default:"-" }}</td></tr>
+    <tr><th>Status</th><td><span class="badge badge-{{ k.status }}">{{ k.get_status_display }}</span></td></tr>
+    <tr><th>Catatan</th><td>{{ k.catatan|default:"-"|linebreaksbr }}</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <div class="card-title">Timeline Follow-up WA</div>
+  {% if fu %}
+  <table class="rekap">
+    <tr><th>Tahap saat ini</th><td>{{ fu.get_tahap_display }}</td></tr>
+    <tr><th>H0 diklik</th><td>{{ fu.h0_diklik|date:"d M Y H:i"|default:"— belum" }}</td></tr>
+    <tr><th>H2 diklik</th><td>{{ fu.h2_diklik|date:"d M Y H:i"|default:"— belum" }}</td></tr>
+    <tr><th>H5 diklik</th><td>{{ fu.h5_diklik|date:"d M Y H:i"|default:"— belum" }}</td></tr>
+  </table>
+  {% else %}<div class="empty">Belum ada data follow-up.</div>{% endif %}
+</div>
+{% endblock %}

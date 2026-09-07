@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "axes",
     "report",
 ]
 
@@ -44,6 +45,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "axes.middleware.AxesMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -59,6 +61,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "report.context_processors.reminder_badge",
             ],
         },
     },
@@ -89,6 +92,16 @@ else:
 
 # --- Auth --------------------------------------------------------------------
 AUTH_USER_MODEL = "report.User"
+
+# AI-1: Proteksi brute-force login (django-axes)
+AUTHENTICATION_BACKENDS = [
+    "axes.backends.AxesStandaloneBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = 1  # jam
+AXES_LOCKOUT_PARAMETERS = [["username", "ip_address"]]
+AXES_RESET_ON_SUCCESS = True
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard"
 LOGOUT_REDIRECT_URL = "login"
@@ -131,6 +144,11 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_REFERRER_POLICY = "same-origin"
     X_FRAME_OPTIONS = "DENY"
+
+# --- Enkripsi field (AI-2) ---------------------------------------------------
+# Kunci Fernet untuk EncryptedTextField (catatan & no_wa).
+# Generate: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+DJANGO_FIELD_ENCRYPTION_KEY = env("DJANGO_FIELD_ENCRYPTION_KEY", "")
 
 # --- Sentry (opsional, aktif kalau SENTRY_DSN diisi) — PRD section 12 --------
 SENTRY_DSN = env("SENTRY_DSN", "")

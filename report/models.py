@@ -5,6 +5,8 @@ Mengikuti PRD section 5 (role) & section 6 (model data 2 lapis).
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
+from django.db.models.functions import Lower
+from .crypto_fields import EncryptedTextField, EncryptedCharField
 
 
 # ---------------------------------------------------------------------------
@@ -43,8 +45,7 @@ class Instansi(models.Model):
                             verbose_name="Nama Instansi")
     alamat = models.TextField(blank=True)
     pic = models.CharField(max_length=120, blank=True, verbose_name="PIC")
-    no_wa = models.CharField(max_length=20, blank=True,
-                             verbose_name="No. WA/Telp")
+    no_wa = EncryptedCharField(blank=True, verbose_name="No. WA/Telp")
     dibuat_oleh = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, blank=True,
         related_name="instansi_dibuat"
@@ -54,6 +55,9 @@ class Instansi(models.Model):
     class Meta:
         verbose_name_plural = "Instansi"
         ordering = ["nama"]
+        constraints = [
+            models.UniqueConstraint(Lower("nama"), name="uniq_instansi_nama_ci"),
+        ]
 
     def __str__(self):
         return self.nama
@@ -94,10 +98,9 @@ class Kunjungan(models.Model):
     tanggal = models.DateField(default=timezone.now, db_index=True)
 
     pic = models.CharField(max_length=120, blank=True, verbose_name="PIC")
-    no_wa = models.CharField(max_length=20, blank=True,
-                             verbose_name="No. WA/Telp")
+    no_wa = EncryptedCharField(blank=True, verbose_name="No. WA/Telp")
     alamat = models.TextField(blank=True)
-    catatan = models.TextField(blank=True)
+    catatan = EncryptedTextField(blank=True)
 
     status = models.CharField(
         max_length=15, choices=Status.choices, default=Status.BARU,
