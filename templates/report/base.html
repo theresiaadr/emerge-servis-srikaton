@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Report Sales Srikaton{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+{% if user.is_authenticated %}
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-mark"></span>
+      <span class="brand-text">Report Sales</span>
+    </div>
+    <nav class="nav">
+      {% if user.is_sales %}
+        <a href="{% url 'dashboard' %}">Beranda</a>
+        <a href="{% url 'kunjungan_list' %}">Kunjungan</a>
+        <a href="{% url 'blast_wa' %}">Blast WA</a>
+      {% else %}
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+      {% endif %}
+      <a href="{% url 'logout' %}" class="nav-logout">Keluar</a>
+    </nav>
+  </div>
+</header>
+{% endif %}
+
+<main class="container">
+  {% if messages %}
+    {% for m in messages %}
+      <div class="alert alert-{{ m.tags }}">{{ m }}</div>
+    {% endfor %}
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+{% block scripts %}{% endblock %}
+</body>
+</html>

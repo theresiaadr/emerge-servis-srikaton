@@ -1,0 +1,31 @@
+{% extends "report/base.html" %}
+{% block title %}Beranda — Report Sales{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1 class="page-title">Halo, {{ user.first_name|default:user.username }}</h1>
+  <a href="{% url 'kunjungan_baru' %}" class="btn btn-primary">+ Kunjungan Baru</a>
+</div>
+<div class="stats">
+  <div class="stat"><div class="stat-num">{{ total }}</div><div class="stat-label">Total Kunjungan</div></div>
+  <div class="stat"><div class="stat-num">{{ bulan_ini }}</div><div class="stat-label">Bulan Ini</div></div>
+</div>
+<div class="card">
+  <div class="card-title">Kunjungan Terbaru</div>
+  {% if terbaru %}
+    <div class="list">
+      {% for k in terbaru %}
+      <div class="list-item">
+        <div class="li-main">
+          <div class="li-title">{{ k.instansi.nama }}</div>
+          <div class="li-sub">{{ k.tanggal|date:"d M Y" }} · {{ k.pic|default:"-" }}</div>
+        </div>
+        <span class="badge badge-{{ k.status }}">{{ k.get_status_display }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty"><div class="empty-title">Belum ada kunjungan</div>
+    <div>Mulai catat kunjungan pertama Anda.</div></div>
+  {% endif %}
+</div>
+{% endblock %}

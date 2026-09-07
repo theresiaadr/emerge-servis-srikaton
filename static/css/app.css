@@ -1,0 +1,136 @@
+:root{
+  --maroon:#8B1A2B; --maroon-dark:#5E101D; --maroon-deep:#470C16;
+  --gold:#C49A3A; --gold-light:#E4C56B;
+  --ivory:#F7F4EF; --white:#FFFFFF; --charcoal:#2A2422;
+  --gray:#7A736E; --border:#E7E1D8; --green:#166534;
+  --radius:14px; --font:'Plus Jakarta Sans',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--ivory);color:var(--charcoal);
+  -webkit-font-smoothing:antialiased;min-height:100vh}
+
+/* Topbar */
+.topbar{background:linear-gradient(135deg,var(--maroon),var(--maroon-deep));
+  color:#fff;position:sticky;top:0;z-index:50;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+.topbar-inner{max-width:960px;margin:0 auto;padding:14px 18px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:1.05rem}
+.brand-mark{width:22px;height:22px;border-radius:6px;
+  background:linear-gradient(135deg,var(--gold-light),var(--gold));flex-shrink:0}
+.nav{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.nav a{color:rgba(255,255,255,.85);text-decoration:none;font-weight:600;
+  font-size:.86rem;padding:7px 12px;border-radius:9px;transition:background .15s}
+.nav a:hover{background:rgba(255,255,255,.12);color:#fff}
+.nav-logout{background:rgba(255,255,255,.1)}
+
+.container{max-width:960px;margin:0 auto;padding:22px 18px 60px}
+
+/* Alerts */
+.alert{padding:11px 15px;border-radius:10px;margin-bottom:14px;font-size:.9rem;
+  font-weight:500}
+.alert-success{background:#e8f5ec;color:var(--green);border:1px solid #b8e0c4}
+.alert-error{background:#fdeaea;color:#a3282b;border:1px solid #f0c0c0}
+
+/* Cards */
+.card{background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.card-title{font-size:1.05rem;font-weight:700;margin-bottom:14px}
+
+/* Stat cards */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:12px;margin-bottom:18px}
+.stat{background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px 18px}
+.stat-num{font-size:1.8rem;font-weight:800;color:var(--maroon);line-height:1}
+.stat-label{font-size:.8rem;color:var(--gray);margin-top:5px;font-weight:500}
+
+/* Page heading */
+.page-head{display:flex;align-items:center;justify-content:space-between;
+  gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.page-title{font-size:1.35rem;font-weight:800}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;
+  border-radius:10px;font-weight:600;font-size:.9rem;text-decoration:none;
+  cursor:pointer;border:none;font-family:var(--font);transition:.15s}
+.btn-primary{background:var(--maroon);color:#fff}
+.btn-primary:hover{background:var(--maroon-dark)}
+.btn-outline{background:transparent;color:var(--maroon);
+  border:1.5px solid var(--maroon)}
+.btn-outline:hover{background:var(--maroon);color:#fff}
+.btn-wa{background:#25D366;color:#fff}
+.btn-wa:hover{background:#1da851}
+.btn-sm{padding:7px 13px;font-size:.82rem}
+
+/* Forms */
+.field{margin-bottom:14px}
+.field label{display:block;font-weight:600;font-size:.85rem;margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;padding:10px 13px;
+  border:1.5px solid var(--border);border-radius:10px;font-family:var(--font);
+  font-size:.92rem;background:#fff}
+.field input:focus,.field select:focus,.field textarea:focus{
+  outline:none;border-color:var(--maroon)}
+.field-error{color:#a3282b;font-size:.8rem;margin-top:4px}
+
+/* Notif instansi sudah dikunjungi */
+.notif-visit{background:#fff8e8;border:1px solid var(--gold-light);
+  border-radius:10px;padding:11px 14px;font-size:.85rem;margin-top:8px}
+.notif-visit strong{color:var(--maroon)}
+
+/* Tables / list */
+.list{display:flex;flex-direction:column;gap:10px}
+.list-item{background:var(--white);border:1px solid var(--border);
+  border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;
+  align-items:flex-start;gap:12px}
+.li-main{flex:1;min-width:0}
+.li-title{font-weight:700;font-size:.98rem}
+.li-sub{font-size:.83rem;color:var(--gray);margin-top:3px}
+.li-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:7px}
+
+/* Status badges */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;
+  font-size:.74rem;font-weight:600}
+.badge-BARU{background:#eef2ff;color:#4338ca}
+.badge-PEMBICARAAN{background:#fef3c7;color:#92600e}
+.badge-PENAWARAN{background:#e0f2fe;color:#0369a1}
+.badge-CLOSING{background:#dcfce7;color:#15803d}
+.badge-TIDAK_RESPON{background:#fee2e2;color:#b91c1c}
+.badge-BATAL{background:#f3f4f6;color:#6b7280}
+.badge-reminder{background:var(--maroon);color:#fff}
+
+/* Login */
+.login-wrap{min-height:100vh;display:flex;align-items:center;
+  justify-content:center;padding:20px;
+  background:linear-gradient(135deg,var(--maroon),var(--maroon-deep))}
+.login-card{background:#fff;border-radius:18px;padding:32px 28px;
+  width:100%;max-width:380px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.login-logo{width:52px;height:52px;border-radius:14px;margin:0 auto 16px;
+  background:linear-gradient(135deg,var(--gold-light),var(--gold))}
+.login-title{text-align:center;font-weight:800;font-size:1.2rem;margin-bottom:4px}
+.login-sub{text-align:center;color:var(--gray);font-size:.85rem;margin-bottom:22px}
+
+/* WA blast rows */
+.wa-item{background:#fff;border:1px solid var(--border);border-radius:12px;
+  padding:15px 16px;margin-bottom:12px}
+.wa-head{display:flex;justify-content:space-between;align-items:flex-start;
+  gap:10px;margin-bottom:10px}
+.wa-links{display:flex;gap:8px;flex-wrap:wrap}
+
+/* Filter bar */
+.filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;
+  background:#fff;padding:14px;border-radius:12px;border:1px solid var(--border)}
+.filter-bar select,.filter-bar input{padding:8px 11px;border:1.5px solid var(--border);
+  border-radius:9px;font-family:var(--font);font-size:.85rem}
+
+.empty{text-align:center;padding:40px 20px;color:var(--gray)}
+.empty-title{font-weight:700;color:var(--charcoal);margin-bottom:6px}
+
+table.rekap{width:100%;border-collapse:collapse;font-size:.88rem}
+table.rekap th,table.rekap td{padding:9px 12px;text-align:left;
+  border-bottom:1px solid var(--border)}
+table.rekap th{font-weight:700;color:var(--gray);font-size:.8rem}
+
+@media(max-width:560px){
+  .page-title{font-size:1.15rem}
+  .nav a{padding:6px 9px;font-size:.8rem}
+}

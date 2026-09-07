@@ -1,0 +1,61 @@
+{% extends "report/base.html" %}
+{% block title %}Dashboard — Report Sales{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1 class="page-title">Dashboard SPV</h1>
+  <a href="{% url 'export_excel' %}" class="btn btn-primary">⬇ Export Excel</a>
+</div>
+
+<form method="get" class="filter-bar">
+  <input type="month" name="bulan" value="{{ f_bulan }}">
+  <select name="sales">
+    <option value="">Semua Sales</option>
+    {% for s in semua_sales %}
+      <option value="{{ s.id }}" {% if f_sales == s.id|stringformat:'s' %}selected{% endif %}>{{ s.first_name|default:s.username }}</option>
+    {% endfor %}
+  </select>
+  <select name="status">
+    <option value="">Semua Status</option>
+    {% for val,lab in status_choices %}
+      <option value="{{ val }}" {% if f_status == val %}selected{% endif %}>{{ lab }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="btn btn-outline btn-sm">Filter</button>
+</form>
+
+<div class="stats">
+  <div class="stat"><div class="stat-num">{{ total }}</div><div class="stat-label">Total Kunjungan</div></div>
+</div>
+
+<div class="card">
+  <div class="card-title">Rekap per Sales</div>
+  <table class="rekap"><tr><th>Sales</th><th>Jumlah</th></tr>
+    {% for r in rekap_sales %}<tr><td>{{ r.sales__first_name|default:r.sales__username }}</td><td>{{ r.jumlah }}</td></tr>{% endfor %}
+  </table>
+</div>
+
+<div class="card">
+  <div class="card-title">Rekap per Status</div>
+  <table class="rekap"><tr><th>Status</th><th>Jumlah</th></tr>
+    {% for r in rekap_status %}<tr><td>{{ r.status }}</td><td>{{ r.jumlah }}</td></tr>{% endfor %}
+  </table>
+</div>
+
+<div class="card">
+  <div class="card-title">Detail Kunjungan (drill-down)</div>
+  {% if daftar_kunjungan %}
+  <div class="list">
+    {% for k in daftar_kunjungan %}
+    <div class="list-item">
+      <div class="li-main">
+        <div class="li-title">{{ k.instansi.nama }}</div>
+        <div class="li-sub">{{ k.tanggal|date:"d M Y" }} · {{ k.sales.first_name|default:k.sales.username }} · PIC: {{ k.pic|default:"-" }}</div>
+        {% if k.catatan %}<div class="li-sub">📝 {{ k.catatan|truncatechars:80 }}</div>{% endif %}
+      </div>
+      <span class="badge badge-{{ k.status }}">{{ k.get_status_display }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}<div class="empty">Tidak ada data sesuai filter.</div>{% endif %}
+</div>
+{% endblock %}

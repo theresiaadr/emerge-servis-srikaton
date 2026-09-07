@@ -1,0 +1,29 @@
+{% extends "report/base.html" %}
+{% block title %}Blast WA — Report Sales{% endblock %}
+{% block content %}
+<div class="page-head"><h1 class="page-title">Blast WA</h1></div>
+{% if items %}
+  {% for it in items %}
+  <div class="wa-item">
+    <div class="wa-head">
+      <div class="li-main">
+        <div class="li-title">{{ it.kunjungan.instansi.nama }}</div>
+        <div class="li-sub">{{ it.kunjungan.tanggal|date:"d M Y" }} · PIC: {{ it.kunjungan.pic|default:it.kunjungan.instansi.pic|default:"-" }}</div>
+      </div>
+      <div style="text-align:right">
+        <span class="badge badge-{{ it.kunjungan.status }}">{{ it.kunjungan.get_status_display }}</span>
+        {% if it.reminder %}<br><span class="badge badge-reminder" style="margin-top:5px">Waktunya {{ it.reminder }}!</span>{% endif %}
+      </div>
+    </div>
+    <div class="wa-links">
+      {% if it.links.H0.link %}<a href="{% url 'klik_wa' it.kunjungan.pk 'H0' %}" class="btn btn-wa btn-sm">WA H0 (Perkenalan)</a>{% endif %}
+      {% if it.links.H2.link %}<a href="{% url 'klik_wa' it.kunjungan.pk 'H2' %}" class="btn btn-wa btn-sm">WA H2 (Follow-up)</a>{% endif %}
+      {% if it.links.H5.link %}<a href="{% url 'klik_wa' it.kunjungan.pk 'H5' %}" class="btn btn-wa btn-sm">WA H5 (Pengingat)</a>{% endif %}
+    </div>
+  </div>
+  {% endfor %}
+{% else %}
+<div class="empty"><div class="empty-title">Belum ada data</div>
+<div>Kunjungan yang Anda catat akan otomatis muncul di sini.</div></div>
+{% endif %}
+{% endblock %}

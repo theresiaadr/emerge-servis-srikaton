@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="id"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Masuk — Report Sales Srikaton</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/app.css">
+</head><body>
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="login-logo"></div>
+    <div class="login-title">Report Sales Srikaton</div>
+    <div class="login-sub">Masuk dengan akun Anda</div>
+    {% if messages %}{% for m in messages %}
+      <div class="alert alert-{{ m.tags }}">{{ m }}</div>
+    {% endfor %}{% endif %}
+    <form method="post">{% csrf_token %}
+      <div class="field">
+        <label>Username</label>
+        <input type="text" name="username" required autofocus>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" name="password" required>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Masuk</button>
+    </form>
+  </div>
+</div>
+</body></html>

@@ -1,0 +1,27 @@
+{% extends "report/base.html" %}
+{% block title %}Kunjungan — Report Sales{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1 class="page-title">Kunjungan Saya</h1>
+  <a href="{% url 'kunjungan_baru' %}" class="btn btn-primary">+ Baru</a>
+</div>
+{% if daftar %}
+<div class="list">
+  {% for k in daftar %}
+  <div class="list-item">
+    <div class="li-main">
+      <div class="li-title">{{ k.instansi.nama }}</div>
+      <div class="li-sub">{{ k.tanggal|date:"d M Y" }} · PIC: {{ k.pic|default:"-" }}</div>
+      <div class="li-meta">
+        <span class="badge badge-{{ k.status }}">{{ k.get_status_display }}</span>
+      </div>
+    </div>
+    <a href="{% url 'kunjungan_edit' k.pk %}" class="btn btn-outline btn-sm">Edit</a>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty"><div class="empty-title">Belum ada kunjungan</div>
+<div>Klik "+ Baru" untuk mencatat kunjungan.</div></div>
+{% endif %}
+{% endblock %}
