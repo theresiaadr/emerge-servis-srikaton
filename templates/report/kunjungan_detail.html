@@ -1,33 +1,42 @@
 {% extends "report/base.html" %}
 {% block title %}Detail Kunjungan — Report Sales{% endblock %}
 {% block content %}
-<div class="page-head">
-  <h1 class="page-title">Detail Kunjungan</h1>
-  <a href="javascript:history.back()" class="btn btn-outline btn-sm">← Kembali</a>
+<a class="back-link" href="javascript:history.back()">&larr; Kembali</a>
+<div class="actions-row" style="margin-top:0">
+  <h1>Detail Kunjungan — {{ k.instansi.nama }}</h1>
+  <span class="badge {{ k.status }}">{{ k.get_status_display }}</span>
+  {% if user.is_admin_spv or user.is_superuser %}<span class="badge" style="background:#F1EFE8;color:#444441">Hanya baca</span>{% endif %}
+  <div class="spacer"></div>
+</div>
+
+<div class="cust-info">
+  <div><b>Instansi</b> &nbsp; {{ k.instansi.nama }}</div>
+  <div><b>Alamat</b> &nbsp; {{ k.alamat|default:k.instansi.alamat|default:"-" }}</div>
+  <div><b>PIC</b> &nbsp; {{ k.pic|default:k.instansi.pic|default:"-" }}</div>
+  <div><b>No. WA</b> &nbsp; {{ k.no_wa|default:k.instansi.no_wa|default:"-" }}</div>
+  <div><b>Sales</b> &nbsp; {{ k.sales.first_name|default:k.sales.username }}</div>
 </div>
 
 <div class="card">
-  <div class="card-title">{{ k.instansi.nama }}</div>
-  <table class="rekap">
-    <tr><th>Tanggal</th><td>{{ k.tanggal|date:"d M Y" }}</td></tr>
-    <tr><th>Sales</th><td>{{ k.sales.first_name|default:k.sales.username }}</td></tr>
-    <tr><th>PIC</th><td>{{ k.pic|default:k.instansi.pic|default:"-" }}</td></tr>
-    <tr><th>No. WA</th><td>{{ k.no_wa|default:k.instansi.no_wa|default:"-" }}</td></tr>
-    <tr><th>Alamat</th><td>{{ k.alamat|default:k.instansi.alamat|default:"-" }}</td></tr>
-    <tr><th>Status</th><td><span class="badge badge-{{ k.status }}">{{ k.get_status_display }}</span></td></tr>
-    <tr><th>Catatan</th><td>{{ k.catatan|default:"-"|linebreaksbr }}</td></tr>
-  </table>
-</div>
-
-<div class="card">
-  <div class="card-title">Timeline Follow-up WA</div>
-  {% if fu %}
-  <table class="rekap">
-    <tr><th>Tahap saat ini</th><td>{{ fu.get_tahap_display }}</td></tr>
-    <tr><th>H0 diklik</th><td>{{ fu.h0_diklik|date:"d M Y H:i"|default:"— belum" }}</td></tr>
-    <tr><th>H2 diklik</th><td>{{ fu.h2_diklik|date:"d M Y H:i"|default:"— belum" }}</td></tr>
-    <tr><th>H5 diklik</th><td>{{ fu.h5_diklik|date:"d M Y H:i"|default:"— belum" }}</td></tr>
-  </table>
-  {% else %}<div class="empty">Belum ada data follow-up.</div>{% endif %}
+  <h2>Riwayat Kunjungan</h2>
+  <ul class="timeline">
+    <li>
+      <b>{{ k.tanggal|date:"d M Y" }}</b> <span class="badge {{ k.status }}">{{ k.get_status_display }}</span>
+      <div class="t-waktu">Kunjungan dicatat {{ k.dibuat_pada|date:"d M Y, H:i" }}</div>
+      {% if k.catatan %}<div style="margin-top:4px">Catatan: {{ k.catatan|linebreaksbr }}</div>{% endif %}
+    </li>
+    {% if fu.h0_diklik %}
+    <li><b>WA Pembuka (H0) diklik</b><div class="t-waktu">{{ fu.h0_diklik|date:"d M Y, H:i" }}</div></li>
+    {% endif %}
+    {% if fu.h2_diklik %}
+    <li><b>WA Follow-up (H2) diklik</b><div class="t-waktu">{{ fu.h2_diklik|date:"d M Y, H:i" }}</div></li>
+    {% endif %}
+    {% if fu.h5_diklik %}
+    <li><b>WA Pengingat (H5) diklik</b><div class="t-waktu">{{ fu.h5_diklik|date:"d M Y, H:i" }}</div></li>
+    {% endif %}
+    {% if not fu or not fu.h0_diklik and not fu.h2_diklik and not fu.h5_diklik %}
+    <li><span style="color:var(--gray)">Belum ada follow-up WA yang diklik.</span></li>
+    {% endif %}
+  </ul>
 </div>
 {% endblock %}

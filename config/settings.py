@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "axes",
+    "captcha",
     "report",
 ]
 
@@ -100,11 +101,16 @@ AUTHENTICATION_BACKENDS = [
 ]
 AXES_FAILURE_LIMIT = 5
 AXES_COOLOFF_TIME = 1  # jam
-AXES_LOCKOUT_PARAMETERS = [["username", "ip_address"]]
+AXES_LOCKOUT_PARAMETERS = ["username"]
 AXES_RESET_ON_SUCCESS = True
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard"
 LOGOUT_REDIRECT_URL = "login"
+
+# N-1: axes.W006 muncul krn AXES_LOCKOUT_PARAMETERS cuma "username"
+# (bukan ip_address) — sengaja, biar lockout ngikutin akun bukan IP kantor
+# yang dipakai bareng-bareng (banyak sales satu WiFi/NAT sama).
+SILENCED_SYSTEM_CHECKS = ["axes.W006"]
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},

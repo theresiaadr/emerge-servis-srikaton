@@ -1,64 +1,80 @@
 {% extends "report/base.html" %}
-{% block title %}Dashboard — Report Sales{% endblock %}
+{% block title %}Dashboard Rekap — Report Sales{% endblock %}
 {% block content %}
-<div class="page-head">
-  <h1 class="page-title">Dashboard SPV</h1>
-  <a href="{% url 'export_excel' %}" class="btn btn-primary">⬇ Export Excel</a>
+<div class="actions-row">
+  <h1>Dashboard Rekap</h1>
+  <div class="spacer"></div>
+  <a class="btn gold" href="{% url 'export_excel' %}">⬇ Export Excel</a>
 </div>
 
-<form method="get" class="filter-bar">
-  <input type="month" name="bulan" value="{{ f_bulan }}">
-  <select name="sales">
-    <option value="">Semua Sales</option>
-    {% for s in semua_sales %}
-      <option value="{{ s.id }}" {% if f_sales == s.id|stringformat:'s' %}selected{% endif %}>{{ s.first_name|default:s.username }}</option>
-    {% endfor %}
-  </select>
-  <select name="status">
-    <option value="">Semua Status</option>
-    {% for val,lab in status_choices %}
-      <option value="{{ val }}" {% if f_status == val %}selected{% endif %}>{{ lab }}</option>
-    {% endfor %}
-  </select>
-  <button type="submit" class="btn btn-outline btn-sm">Filter</button>
+<form method="get" class="filter-row">
+  <p style="margin:0"><label>Bulan</label><input type="month" name="bulan" value="{{ f_bulan }}"></p>
+  <p style="margin:0"><label>Sales</label>
+    <select name="sales">
+      <option value="">— semua —</option>
+      {% for s in semua_sales %}
+      <option value="{{ s.id }}" {% if f_sales == s.id|stringformat:"s" %}selected{% endif %}>{{ s.first_name|default:s.username }}</option>
+      {% endfor %}
+    </select></p>
+  <p style="margin:0"><label>Status</label>
+    <select name="status">
+      <option value="">— semua —</option>
+      {% for val, label in status_choices %}
+      <option value="{{ val }}" {% if f_status == val %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select></p>
+  <button class="btn">Terapkan</button>
+  <a class="btn line" href="{% url 'dashboard' %}">Reset</a>
 </form>
 
-<div class="stats">
-  <div class="stat"><div class="stat-num">{{ total }}</div><div class="stat-label">Total Kunjungan</div></div>
+<div class="grid grid-4" style="margin-bottom:20px">
+  <div class="stat"><b>{{ total }}</b><span>Total Kunjungan</span></div>
+  <div class="stat"><b>{{ n_closing }}</b><span>Closing</span></div>
+  <div class="stat"><b>{{ n_penawaran }}</b><span>Penawaran</span></div>
+  <div class="stat"><b>{{ n_tidak_respon }}</b><span>Tidak Respon</span></div>
 </div>
 
 <div class="card">
-  <div class="card-title">Rekap per Sales</div>
-  <table class="rekap"><tr><th>Sales</th><th>Jumlah</th></tr>
-    {% for r in rekap_sales %}<tr><td>{{ r.sales__first_name|default:r.sales__username }}</td><td>{{ r.jumlah }}</td></tr>{% endfor %}
-  </table>
+  <h2>Kunjungan per Sales</h2>
+  {% if grafik_sales %}
+  <canvas id="gSales" height="220"></canvas>
+  {% else %}<div class="empty"><span class="e-ico">📊</span>Belum ada data sesuai filter.</div>{% endif %}
 </div>
+{{ grafik_sales|json_script:"grafikSalesData" }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script>
+(function () {
+  if (typeof Chart === "undefined") return;
+  var el = document.getElementById("grafikSalesData");
+  if (!el) return;
+  var d = JSON.parse(el.textContent);
+  new Chart(document.getElementById("gSales"), {
+    type: "bar",
+    data: { labels: d.map(function (x) { return x.label; }),
+            datasets: [{ data: d.map(function (x) { return x.n; }), backgroundColor: "#8B1A2B" }] },
+    options: { indexAxis: "y", plugins: { legend: { display: false } },
+      scales: { x: { beginAtZero: true, ticks: { precision: 0 } } } }
+  });
+})();
+</script>
 
 <div class="card">
-  <div class="card-title">Rekap per Status</div>
-  <table class="rekap"><tr><th>Status</th><th>Jumlah</th></tr>
-    {% for r in rekap_status %}<tr><td>{{ r.status }}</td><td>{{ r.jumlah }}</td></tr>{% endfor %}
-  </table>
-</div>
-
-<div class="card">
-  <div class="card-title">Detail Kunjungan (drill-down)</div>
+  <h2>Data Kunjungan Terbaru</h2>
   {% if daftar_kunjungan %}
-  <div class="list">
+  <div class="tabel-scroll">
+  <table>
+    <tr><th>Tanggal</th><th>Sales</th><th>Instansi</th><th>Status</th><th></th></tr>
     {% for k in daftar_kunjungan %}
-    <div class="list-item">
-      <div class="li-main">
-        <div class="li-title">{{ k.instansi.nama }}</div>
-        <div class="li-sub">{{ k.tanggal|date:"d M Y" }} · {{ k.sales.first_name|default:k.sales.username }} · PIC: {{ k.pic|default:"-" }}</div>
-        {% if k.catatan %}<div class="li-sub">📝 {{ k.catatan|truncatechars:80 }}</div>{% endif %}
-      </div>
-      <div style="text-align:right">
-        <span class="badge badge-{{ k.status }}">{{ k.get_status_display }}</span><br>
-        <a href="{% url 'kunjungan_detail' k.pk %}" class="btn btn-outline btn-sm" style="margin-top:6px">Detail</a>
-      </div>
-    </div>
+    <tr>
+      <td>{{ k.tanggal|date:"d/m/Y" }}</td>
+      <td>{{ k.sales.first_name|default:k.sales.username }}</td>
+      <td>{{ k.instansi.nama }}</td>
+      <td><span class="badge {{ k.status }}">{{ k.get_status_display }}</span></td>
+      <td><a class="btn line sm" href="{% url 'kunjungan_detail' k.pk %}">Detail</a></td>
+    </tr>
     {% endfor %}
+  </table>
   </div>
-  {% else %}<div class="empty">Tidak ada data sesuai filter.</div>{% endif %}
+  {% else %}<div class="empty"><span class="e-ico">🗒</span>Tidak ada data sesuai filter.</div>{% endif %}
 </div>
 {% endblock %}

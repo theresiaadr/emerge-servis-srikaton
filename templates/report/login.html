@@ -1,29 +1,123 @@
-<!DOCTYPE html>
-<html lang="id"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Masuk — Report Sales Srikaton</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/static/css/app.css">
-</head><body>
-<div class="login-wrap">
-  <div class="login-card">
-    <div class="login-logo"></div>
-    <div class="login-title">Report Sales Srikaton</div>
-    <div class="login-sub">Masuk dengan akun Anda</div>
-    {% if messages %}{% for m in messages %}
-      <div class="alert alert-{{ m.tags }}">{{ m }}</div>
-    {% endfor %}{% endif %}
-    <form method="post">{% csrf_token %}
-      <div class="field">
-        <label>Username</label>
-        <input type="text" name="username" required autofocus>
+{% extends "report/base.html" %}
+{% block title %}Login — Report Sales Srikaton{% endblock %}
+{% block content %}
+<div class="lg-stage">
+  {# lapisan latar: gradien beranimasi + motif kotak melayang #}
+  <div class="lg-aurora"></div>
+  <span class="lg-kotak k1"></span><span class="lg-kotak k2"></span>
+  <span class="lg-kotak k3"></span><span class="lg-kotak k4"></span>
+  <span class="lg-kotak k5"></span><span class="lg-kotak k6"></span>
+
+  <div class="lg-panel">
+
+    {# ---------- KIRI: form ---------- #}
+    <div class="lg-form">
+      <div class="lg-form-in">
+        <span class="lg-eyebrow">Report Srikaton</span>
+        <h1>Masuk ke<br>akun Anda.</h1>
+        <p class="lg-sub">Silakan masukkan detail Anda untuk melanjutkan akses.</p>
+
+        {% if form.captcha.errors %}
+        <div class="lg-alert">Kode keamanan salah. Coba lagi.</div>
+        {% elif form.errors %}
+        <div class="lg-alert">Username atau password salah. Coba lagi.</div>
+        {% endif %}
+
+        <form method="post" id="lgForm">{% csrf_token %}
+          <div class="lg-field">
+            <label for="id_username">Username</label>
+            <input type="text" name="username" id="id_username" autofocus
+                   autocapitalize="none" autocomplete="username" required
+                   placeholder="username Anda">
+          </div>
+          <div class="lg-field">
+            <label for="id_password">Password</label>
+            <div class="lg-pw">
+              <input type="password" name="password" id="id_password"
+                     autocomplete="current-password" required
+                     placeholder="password Anda">
+              <button type="button" class="lg-mata" id="lgMata" aria-label="Tampilkan password">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/>
+                  <circle cx="12" cy="12" r="2.6"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="lg-field">
+            <label for="id_captcha_1">Kode Keamanan</label>
+            {{ form.captcha }}
+          </div>
+          <button class="lg-btn" id="lgBtn">
+            <span class="lg-btn-t">Masuk</span>
+            <span class="lg-spin" aria-hidden="true"></span>
+          </button>
+        </form>
+
+        <p class="lg-foot">Lupa password? Hubungi Admin/SPV Anda.</p>
       </div>
-      <div class="field">
-        <label>Password</label>
-        <input type="password" name="password" required>
+    </div>
+
+    {# ---------- KANAN: branding ---------- #}
+    <div class="lg-brand">
+      <div class="lg-brand-in">
+        <img class="lg-logo" src="/static/img/logo-full-white.png" alt="Srikaton Inovasi Teknologi">
+        <h2>Laporan Kunjungan Sales</h2>
+        <p class="lg-tag">Optimalkan produktivitas tim penjualan Anda dengan
+          pelaporan yang efisien.</p>
+
+        <ul class="lg-fitur">
+          <li>
+            <span class="lg-ic">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+              </svg>
+            </span>
+            <div><b>Catat kunjungan harian</b><small>Instansi, PIC, dan status tercatat rapi</small></div>
+          </li>
+          <li>
+            <span class="lg-ic">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 8.6 8.6 0 0 1-4-1L3 20l1.1-5a8.4 8.4 0 0 1-1-4A8.4 8.4 0 0 1 11.5 3 8.4 8.4 0 0 1 21 11.5z"/>
+              </svg>
+            </span>
+            <div><b>Follow-up WA otomatis</b><small>Link H0/H2/H5 siap pakai, sekali klik</small></div>
+          </li>
+          <li>
+            <span class="lg-ic">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/>
+              </svg>
+            </span>
+            <div><b>Rekap untuk SPV</b><small>Dashboard, filter, dan export Excel</small></div>
+          </li>
+        </ul>
       </div>
-      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Masuk</button>
-    </form>
+    </div>
+
   </div>
 </div>
-</body></html>
+
+<script>
+(function () {
+  var mata = document.getElementById("lgMata");
+  var pw = document.getElementById("id_password");
+  if (mata && pw) {
+    mata.addEventListener("click", function () {
+      var lihat = pw.type === "password";
+      pw.type = lihat ? "text" : "password";
+      mata.classList.toggle("on", lihat);
+      mata.setAttribute("aria-label", lihat ? "Sembunyikan password" : "Tampilkan password");
+    });
+  }
+  var f = document.getElementById("lgForm"), b = document.getElementById("lgBtn");
+  if (f && b) {
+    f.addEventListener("submit", function () { b.classList.add("loading"); b.disabled = true; });
+  }
+})();
+</script>
+{% endblock %}

@@ -5,7 +5,7 @@ from .models import User, Instansi, Kunjungan, FollowUpWA
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
-    list_display = ("username", "first_name", "role", "is_active")
+    list_display = ("username", "first_name", "role", "no_hp", "is_active")
     fieldsets = UserAdmin.fieldsets + (
         ("Info Srikaton", {"fields": ("role", "no_hp")}),
     )

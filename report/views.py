@@ -1,6 +1,5 @@
 """Views Web Report Sales Srikaton."""
 import datetime
-from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Count
@@ -14,23 +13,8 @@ from . import wa_templates
 
 
 # --- AUTH --------------------------------------------------------------------
-def login_view(request):
-    if request.user.is_authenticated:
-        return redirect("dashboard")
-    if request.method == "POST":
-        u = authenticate(request,
-                         username=request.POST.get("username"),
-                         password=request.POST.get("password"))
-        if u:
-            login(request, u)
-            return redirect("dashboard")
-        messages.error(request, "Username atau password salah.")
-    return render(request, "report/login.html")
-
-
-def logout_view(request):
-    logout(request)
-    return redirect("login")
+# Login/logout pakai django.contrib.auth.views (LoginView/LogoutView) —
+# lihat config/urls.py. authentication_form=LoginForm menambah captcha (AI-1b).
 
 
 # --- DASHBOARD (cabang sesuai role) ------------------------------------------
@@ -79,10 +63,18 @@ def dashboard_spv(request):
         qs.values("sales__username", "sales__first_name")
           .annotate(jumlah=Count("id")).order_by("-jumlah")
     )
+    peta_status = {r["status"]: r["jumlah"] for r in rekap_status}
     ctx = {
         "total": qs.count(),
+        "n_closing": peta_status.get(Kunjungan.Status.CLOSING, 0),
+        "n_penawaran": peta_status.get(Kunjungan.Status.PENAWARAN, 0),
+        "n_tidak_respon": peta_status.get(Kunjungan.Status.TIDAK_RESPON, 0),
         "rekap_status": rekap_status,
         "rekap_sales": rekap_sales,
+        "grafik_sales": [
+            {"label": r["sales__first_name"] or r["sales__username"], "n": r["jumlah"]}
+            for r in rekap_sales
+        ],
         "daftar_kunjungan": qs[:100],
         "semua_sales": User.objects.filter(role=User.Role.SALES),
         "status_choices": Kunjungan.Status.choices,

@@ -1,29 +1,33 @@
 {% extends "report/base.html" %}
 {% block title %}Blast WA — Report Sales{% endblock %}
 {% block content %}
-<div class="page-head"><h1 class="page-title">Blast WA</h1></div>
-{% if items %}
-  {% for it in items %}
-  <div class="wa-item">
-    <div class="wa-head">
-      <div class="li-main">
-        <div class="li-title">{{ it.kunjungan.instansi.nama }}</div>
-        <div class="li-sub">{{ it.kunjungan.tanggal|date:"d M Y" }} · PIC: {{ it.kunjungan.pic|default:it.kunjungan.instansi.pic|default:"-" }}</div>
-      </div>
-      <div style="text-align:right">
-        <span class="badge badge-{{ it.kunjungan.status }}">{{ it.kunjungan.get_status_display }}</span>
-        {% if it.reminder %}<br><span class="badge badge-reminder" style="margin-top:5px">Waktunya {{ it.reminder }}!</span>{% endif %}
-      </div>
-    </div>
-    <div class="wa-links">
-      {% if it.links.H0.link %}<form method="post" action="{% url 'klik_wa' it.kunjungan.pk 'H0' %}" style="display:inline">{% csrf_token %}<button class="btn btn-wa btn-sm">WA H0 (Perkenalan)</button></form>{% endif %}
-      {% if it.links.H2.link %}<form method="post" action="{% url 'klik_wa' it.kunjungan.pk 'H2' %}" style="display:inline">{% csrf_token %}<button class="btn btn-wa btn-sm">WA H2 (Follow-up)</button></form>{% endif %}
-      {% if it.links.H5.link %}<form method="post" action="{% url 'klik_wa' it.kunjungan.pk 'H5' %}" style="display:inline">{% csrf_token %}<button class="btn btn-wa btn-sm">WA H5 (Pengingat)</button></form>{% endif %}
-    </div>
+<h1>Blast WA</h1>
+<p class="page-desc">Kelola dan pantau follow-up WhatsApp ke instansi yang sudah Anda kunjungi.</p>
+
+<div class="card">
+  {% if items %}
+  <div class="tabel-scroll">
+  <table>
+    <tr><th>Instansi</th><th>PIC</th><th>Follow Up</th><th>Status</th><th>Catatan</th></tr>
+    {% for it in items %}
+    <tr>
+      <td><b>{{ it.kunjungan.instansi.nama }}</b><br>
+        <span style="font-size:.8rem;color:var(--gray)">{{ it.kunjungan.tanggal|date:"d M Y" }}</span></td>
+      <td>{{ it.kunjungan.pic|default:it.kunjungan.instansi.pic|default:"-" }}</td>
+      <td>
+        {% if it.links.H0.link %}<form method="post" action="{% url 'klik_wa' it.kunjungan.pk 'H0' %}" style="display:inline">{% csrf_token %}<button class="btn wa sm" title="{{ it.links.H0.pesan }}">H0</button></form>{% endif %}
+        {% if it.links.H2.link %}<form method="post" action="{% url 'klik_wa' it.kunjungan.pk 'H2' %}" style="display:inline">{% csrf_token %}<button class="btn wa sm" title="{{ it.links.H2.pesan }}">H2</button></form>{% endif %}
+        {% if it.links.H5.link %}<form method="post" action="{% url 'klik_wa' it.kunjungan.pk 'H5' %}" style="display:inline">{% csrf_token %}<button class="btn wa sm" title="{{ it.links.H5.pesan }}">H5</button></form>{% endif %}
+        {% if it.reminder %}<div style="margin-top:5px"><span class="badge" style="background:#FDFBF6;border-color:var(--gold);color:var(--maroon)">Reminder hari ini ({{ it.reminder }})</span></div>{% endif %}
+      </td>
+      <td><span class="badge {{ it.kunjungan.status }}">{{ it.kunjungan.get_status_display }}</span></td>
+      <td>{{ it.kunjungan.catatan|default:"-"|truncatechars:60 }}</td>
+    </tr>
+    {% endfor %}
+  </table>
   </div>
-  {% endfor %}
-{% else %}
-<div class="empty"><div class="empty-title">Belum ada data</div>
-<div>Kunjungan yang Anda catat akan otomatis muncul di sini.</div></div>
-{% endif %}
+  {% else %}
+  <div class="empty"><span class="e-ico">💬</span>Belum ada data — kunjungan yang Anda catat akan otomatis muncul di sini.</div>
+  {% endif %}
+</div>
 {% endblock %}

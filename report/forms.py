@@ -1,7 +1,15 @@
 """Form input kunjungan & validasi nomor WA (PRD section 12)."""
 import re
 from django import forms
+from django.contrib.auth.forms import AuthenticationForm
+from captcha.fields import CaptchaField
 from .models import Kunjungan, Instansi
+
+
+class LoginForm(AuthenticationForm):
+    """Form login standar Django (username/password + authenticate lewat
+    axes backend) + 1 field captcha tambahan (AI-1b)."""
+    captcha = CaptchaField(label="Kode Keamanan")
 
 
 def validasi_no_wa(value):

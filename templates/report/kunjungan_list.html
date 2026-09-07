@@ -1,27 +1,29 @@
 {% extends "report/base.html" %}
-{% block title %}Kunjungan — Report Sales{% endblock %}
+{% block title %}Kunjungan Saya — Report Sales{% endblock %}
 {% block content %}
-<div class="page-head">
-  <h1 class="page-title">Kunjungan Saya</h1>
-  <a href="{% url 'kunjungan_baru' %}" class="btn btn-primary">+ Baru</a>
+<div class="actions-row">
+  <h1>Kunjungan Saya</h1>
+  <div class="spacer"></div>
+  <a class="btn" href="{% url 'kunjungan_baru' %}">+ Tambah</a>
 </div>
-{% if daftar %}
-<div class="list">
-  {% for k in daftar %}
-  <div class="list-item">
-    <div class="li-main">
-      <div class="li-title">{{ k.instansi.nama }}</div>
-      <div class="li-sub">{{ k.tanggal|date:"d M Y" }} · PIC: {{ k.pic|default:"-" }}</div>
-      <div class="li-meta">
-        <span class="badge badge-{{ k.status }}">{{ k.get_status_display }}</span>
-      </div>
-    </div>
-    <a href="{% url 'kunjungan_edit' k.pk %}" class="btn btn-outline btn-sm">Edit</a>
+<div class="card">
+  {% if daftar %}
+  <div class="tabel-scroll">
+  <table>
+    <tr><th>Tanggal</th><th>Instansi</th><th>PIC</th><th>Status</th><th></th></tr>
+    {% for k in daftar %}
+    <tr>
+      <td>{{ k.tanggal|date:"d/m/Y" }}</td>
+      <td><a href="{% url 'kunjungan_detail' k.pk %}"><b>{{ k.instansi.nama }}</b></a></td>
+      <td>{{ k.pic|default:"-" }}</td>
+      <td><span class="badge {{ k.status }}">{{ k.get_status_display }}</span></td>
+      <td><a class="btn line sm" href="{% url 'kunjungan_edit' k.pk %}">✎ Edit</a></td>
+    </tr>
+    {% endfor %}
+  </table>
   </div>
-  {% endfor %}
+  {% else %}
+  <div class="empty"><span class="e-ico">🗒</span>Belum ada kunjungan. Klik "+ Tambah" untuk mencatat.</div>
+  {% endif %}
 </div>
-{% else %}
-<div class="empty"><div class="empty-title">Belum ada kunjungan</div>
-<div>Klik "+ Baru" untuk mencatat kunjungan.</div></div>
-{% endif %}
 {% endblock %}

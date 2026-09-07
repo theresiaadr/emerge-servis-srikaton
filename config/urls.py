@@ -1,11 +1,17 @@
 from django.contrib import admin
-from django.urls import path
+from django.contrib.auth import views as auth_views
+from django.urls import path, include
 from report import views
+from report.forms import LoginForm
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", views.login_view, name="login"),
-    path("logout/", views.logout_view, name="logout"),
+    path("captcha/", include("captcha.urls")),
+    path("", auth_views.LoginView.as_view(
+        template_name="report/login.html",
+        authentication_form=LoginForm,
+        redirect_authenticated_user=True), name="login"),
+    path("logout/", auth_views.LogoutView.as_view(next_page="login"), name="logout"),
     path("dashboard/", views.dashboard, name="dashboard"),
     # Sales
     path("kunjungan/", views.kunjungan_list, name="kunjungan_list"),

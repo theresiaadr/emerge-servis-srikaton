@@ -11,34 +11,81 @@
 </head>
 <body>
 {% if user.is_authenticated %}
-<header class="topbar">
-  <div class="topbar-inner">
-    <div class="brand">
-      <span class="brand-mark"></span>
-      <span class="brand-text">Report Sales</span>
-    </div>
-    <nav class="nav">
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <a class="side-logo" href="{% url 'dashboard' %}">
+      <img src="/static/img/logo-full-white.png" alt="Srikaton Inovasi Teknologi">
+    </a>
+    <nav class="side-nav">
+      <a href="{% url 'dashboard' %}" {% if request.resolver_match.url_name == 'dashboard' %}class="on"{% endif %}>
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></span>
+        Dashboard
+      </a>
       {% if user.is_sales %}
-        <a href="{% url 'dashboard' %}">Beranda</a>
-        <a href="{% url 'kunjungan_list' %}">Kunjungan</a>
-        <a href="{% url 'blast_wa' %}" class="nav-bell">🔔{% if reminder_count %}<span class="bell-count">{{ reminder_count }}</span>{% endif %}</a>
-      {% else %}
-        <a href="{% url 'dashboard' %}">Dashboard</a>
+      <a href="{% url 'kunjungan_list' %}" {% if request.resolver_match.url_name == 'kunjungan_list' or request.resolver_match.url_name == 'kunjungan_baru' or request.resolver_match.url_name == 'kunjungan_edit' %}class="on"{% endif %}>
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6a1 1 0 0 1 1 1v2H8V3a1 1 0 0 1 1-1z"/><rect x="5" y="5" width="14" height="16" rx="2"/><path d="M9 12h6M9 16h6"/></svg></span>
+        Kunjungan Saya
+      </a>
+      <a href="{% url 'blast_wa' %}" {% if request.resolver_match.url_name == 'blast_wa' %}class="on"{% endif %}>
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 8.6 8.6 0 0 1-4-1L3 20l1.1-5a8.4 8.4 0 0 1-1-4A8.4 8.4 0 0 1 11.5 3 8.4 8.4 0 0 1 21 11.5z"/></svg></span>
+        Blast WA
+      </a>
       {% endif %}
-      <a href="{% url 'logout' %}" class="nav-logout">Keluar</a>
     </nav>
-  </div>
-</header>
+    <a class="side-user" href="#" title="{{ user.get_role_display }}">
+      <span class="avatar avatar-txt">{{ user.first_name|default:user.username|slice:":1"|upper }}</span>
+      <span class="side-user-t">
+        <b>{{ user.first_name|default:user.username }}</b>
+        <small>{{ user.get_role_display }}{% if user.is_superuser %} · Superuser{% endif %}</small>
+      </span>
+    </a>
+    <div class="side-foot">
+      <form method="post" action="{% url 'logout' %}">{% csrf_token %}
+        <button class="side-keluar"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v8"/><path d="M17.7 6.3a8 8 0 1 1-11.4 0"/></svg></span> Keluar</button>
+      </form>
+    </div>
+  </aside>
+  <div class="side-backdrop" id="sideBackdrop"></div>
+
+  <div class="main">
+    <header class="mainbar">
+      <button class="burger" id="burger" aria-label="Buka menu"><span></span><span></span><span></span></button>
+      <div class="spacer"></div>
+      {% if user.is_sales %}
+      <a class="notif-bell" href="{% url 'blast_wa' %}" title="Follow-up hari ini">
+        &#128276;{% if reminder_count %}<span class="notif-dot">{{ reminder_count }}</span>{% endif %}
+      </a>
+      {% endif %}
+    </header>
 {% endif %}
 
-<main class="container">
-  {% if messages %}
-    {% for m in messages %}
-      <div class="alert alert-{{ m.tags }}">{{ m }}</div>
-    {% endfor %}
-  {% endif %}
+<main class="wrap {% if not user.is_authenticated %}wrap-pub{% endif %}">
+  {% for m in messages %}<div class="msg {{ m.tags }}">{{ m }}</div>{% endfor %}
   {% block content %}{% endblock %}
 </main>
+
+{% if user.is_authenticated %}
+  </div>
+</div>
+{% endif %}
+
+<script>
+(function () {
+  var burger = document.getElementById("burger");
+  var sidebar = document.getElementById("sidebar");
+  var backdrop = document.getElementById("sideBackdrop");
+  if (burger && sidebar) {
+    burger.addEventListener("click", function () {
+      sidebar.classList.toggle("open");
+      backdrop.classList.toggle("show");
+    });
+    backdrop.addEventListener("click", function () {
+      sidebar.classList.remove("open");
+      backdrop.classList.remove("show");
+    });
+  }
+})();
+</script>
 {% block scripts %}{% endblock %}
 </body>
 </html>

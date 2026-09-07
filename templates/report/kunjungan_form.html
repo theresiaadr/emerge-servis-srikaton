@@ -1,10 +1,11 @@
 {% extends "report/base.html" %}
 {% block title %}{% if edit %}Edit{% else %}Kunjungan Baru{% endif %} — Report Sales{% endblock %}
 {% block content %}
-<div class="page-head">
-  <h1 class="page-title">{% if edit %}Edit Kunjungan{% else %}Kunjungan Baru{% endif %}</h1>
-</div>
-<div class="card">
+<a class="back-link" href="{% url 'kunjungan_list' %}">&larr; Kunjungan Saya</a>
+<div class="card" style="max-width:640px;margin:0 auto">
+  <h1 style="margin-bottom:4px">{% if edit %}Edit Kunjungan{% else %}Input Laporan Kunjungan{% endif %}</h1>
+  <p class="page-desc">Silakan isi data laporan kunjungan Anda di bawah ini dengan lengkap.</p>
+
   <form method="post">{% csrf_token %}
     <div class="field">
       <label>Nama Instansi</label>
@@ -12,7 +13,7 @@
       <datalist id="daftar-instansi">
         {% for i in daftar_instansi %}<option value="{{ i.nama }}">{% endfor %}
       </datalist>
-      <div id="notif-instansi"></div>
+      <div id="custInfo" class="cust-info" hidden></div>
       {% if form.nama_instansi.errors %}<div class="field-error">{{ form.nama_instansi.errors.0 }}</div>{% endif %}
     </div>
     <div class="field">
@@ -35,39 +36,38 @@
     <div class="field">
       <label>Catatan</label>{{ form.catatan }}
     </div>
-    <div style="display:flex;gap:10px">
-      <button type="submit" class="btn btn-primary">Simpan</button>
-      <a href="{% url 'kunjungan_list' %}" class="btn btn-outline">Batal</a>
+    <div class="actions-row" style="margin:0">
+      <button type="submit" class="btn">Simpan</button>
+      <a href="{% url 'kunjungan_list' %}" class="btn line">Batal</a>
     </div>
   </form>
 </div>
 {% endblock %}
 {% block scripts %}
 <script>
-const inp=document.querySelector('input[name="nama_instansi"]');
-const notif=document.getElementById('notif-instansi');
-let t;
-inp.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(cek,400)});
-function cek(){
-  const nama=inp.value.trim();
-  if(!nama){notif.innerHTML='';return}
-  fetch('/api/cek-instansi/?nama='+encodeURIComponent(nama))
-    .then(r=>r.json()).then(d=>{
-      if(!d.ada){notif.innerHTML='';return}
-      // auto-fill
-      if(d.alamat)document.querySelector('textarea[name="alamat"]').value=d.alamat;
-      if(d.pic)document.querySelector('input[name="pic"]').value=d.pic;
-      if(d.no_wa)document.querySelector('input[name="no_wa"]').value=d.no_wa;
-      let html='<div class="notif-visit">Data instansi ditemukan & diisi otomatis.';
-      if(d.dikunjungi&&d.dikunjungi.length){
-        html+='<br>';
-        d.dikunjungi.forEach(v=>{
-          html+='<strong>Sudah pernah dikunjungi oleh '+v.sales+'</strong>, '+v.tanggal+'<br>';
+(function () {
+  var inp = document.querySelector('input[name="nama_instansi"]');
+  var box = document.getElementById("custInfo");
+  var t = null;
+  function cek() {
+    var nama = inp.value.trim();
+    if (!nama) { box.hidden = true; return; }
+    fetch("{% url 'cek_instansi' %}?nama=" + encodeURIComponent(nama))
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (!d.ada) { box.hidden = true; return; }
+        if (d.alamat) document.querySelector('textarea[name="alamat"]').value = d.alamat;
+        if (d.pic) document.querySelector('input[name="pic"]').value = d.pic;
+        if (d.no_wa) document.querySelector('input[name="no_wa"]').value = d.no_wa;
+        var h = "📍 Data instansi ditemukan &amp; diisi otomatis.";
+        (d.dikunjungi || []).forEach(function (v) {
+          h += "<br><strong>Sudah pernah dikunjungi oleh " + v.sales + "</strong> — " + v.tanggal;
         });
-      }
-      html+='</div>';
-      notif.innerHTML=html;
-    });
-}
+        box.innerHTML = h;
+        box.hidden = false;
+      });
+  }
+  inp.addEventListener("input", function () { clearTimeout(t); t = setTimeout(cek, 400); });
+})();
 </script>
 {% endblock %}
